@@ -20,4 +20,4 @@ media/
 # Windows
 Thumbs.db
 
-*/settings.py
+final/settings_local.py

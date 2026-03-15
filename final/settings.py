@@ -135,3 +135,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Email Service
+try:
+    from .settings_local import *
+except ImportError:
+    pass
