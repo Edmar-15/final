@@ -1,0 +1,243 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #f0f2f5;
+    margin: 0;
+    padding: 20px;
+}
+
+.content-wrapper {
+    background-color: aquamarine;
+    border: 2px solid #333;
+    border-radius: 20px;
+    padding: 30px;
+    width: 400px;
+    aspect-ratio: 3/4;
+    box-shadow: 0 15px 25px rgba(20, 30, 80, 0.3);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.content-wrapper:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 30px rgba(20, 30, 80, 0.4);
+}
+
+.content-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2) 0%, transparent 60%);
+    pointer-events: none;
+    border-radius: 18px;
+}
+
+h2 {
+    margin: 0 0 25px 0;
+    color: #222;
+    font-size: 2.2em;
+    font-weight: 600;
+    text-align: center;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, #333, #555);
+    border-radius: 2px;
+}
+
+form {
+    width: 100%;
+    flex: 1;
+}
+
+form p {
+    margin-bottom: 15px;
+}
+
+form p:first-of-type {
+    margin-top: 0;
+}
+
+form label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+    font-weight: 500;
+    font-size: 0.95em;
+}
+
+form input {
+    width: 100%;
+    padding: 12px 15px;
+    outline: none;
+    border: 2px solid rgba(20, 30, 80, 0.1);
+    border-radius: 10px;
+    font-size: 1em;
+    transition: all 0.3s ease;
+    background-color: white;
+}
+
+form input:hover {
+    border-color: rgba(20, 30, 80, 0.3);
+}
+
+form input:focus {
+    border: 2px solid #333;
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(20, 30, 80, 0.1);
+}
+
+form input::placeholder {
+    color: #666;
+    transition: opacity 0.3s ease;
+}
+
+form input:focus::placeholder {
+    opacity: 0.6;
+}
+
+button[type="submit"] {
+    width: 100%;
+    margin-top: 25px;
+    padding: 14px;
+    background: linear-gradient(135deg, #2c3e50, #333);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 2px solid transparent;
+}
+
+button[type="submit"]:hover {
+    background: linear-gradient(135deg, #333, #2c3e50);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(20, 30, 80, 0.3);
+    border-color: #333;
+}
+
+button[type="submit"]:active {
+    transform: translateY(0);
+}
+
+.errorlist {
+    list-style: none;
+    color: #e74c3c;
+    font-size: 0.85em;
+    margin-top: 5px;
+    padding-left: 0;
+}
+
+.errorlist li {
+    background-color: rgba(231, 76, 60, 0.1);
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-bottom: 3px;
+    border-left: 3px solid #e74c3c;
+}
+
+.helptext {
+    display: block;
+    color: #444;
+    font-size: 0.8em;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+a {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    color: #1a2634;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    position: relative;
+    padding: 2px 0;
+    margin-top: 15px;
+}
+
+a:hover {
+    color: #000;
+}
+
+a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #333;
+    transition: width 0.3s ease;
+}
+
+a:hover::after {
+    width: 100%;
+}
+
+footer {
+    margin-top: auto;
+    text-align: center;
+    color: #444;
+    font-size: 0.85em;
+    padding-top: 15px;
+    border-top: 1px solid rgba(51, 51, 51, 0.2);
+    font-weight: 500;
+}
+
+form p {
+    animation: fadeIn 0.5s ease-out forwards;
+    opacity: 0;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+@media (max-width: 480px) {
+    .content-wrapper {
+        width: 100%;
+        padding: 25px 20px;
+        aspect-ratio: auto;
+        min-height: 500px;
+    }
+    
+    h2 {
+        font-size: 1.9em;
+    }
+    
+    button[type="submit"] {
+        padding: 12px;
+        font-size: 1em;
+    }
+}
