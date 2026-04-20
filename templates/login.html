@@ -7,6 +7,7 @@
 {% block content %}
 <div class="container">
     <h2>Login</h2>
+    <a href="{% url "welcome" %}">X</a>
 
     <form method="POST">
         {% csrf_token %}

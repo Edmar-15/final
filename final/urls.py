@@ -16,14 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from account.views import home
+from landing.views import welcome
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', home, name='home'),
+    path('', welcome, name='welcome'),
     path('accounts/', include('account.urls')),
+    path('piyu/', include('landing.urls')),
 ]
 
 if settings.DEBUG:
