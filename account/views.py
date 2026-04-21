@@ -6,55 +6,10 @@ from .models import EmailOTP, UserProfile
 from django.core.mail import send_mail
 from django.utils import timezone
 from datetime import timedelta
-
-# Decorators here.
-
-def anonymous_required(view_func):
-    def wrapper(request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return redirect('home')
-        return view_func(request, *args, **kwargs)
-    return wrapper
-
-def completion_required(view_func):
-    def wrapper(request, *args, **kwargs):
-        if request.user.is_authenticated:
-            profile = request.user.userprofile_set.first()
-            if not profile or not profile.is_verified:
-                return redirect('account_completion')
-        return view_func(request, *args, **kwargs)
-    return wrapper
-
-def verification_required(view_func):
-    def wrapper(request, *args, **kwargs):
-        if request.user.is_authenticated:
-            profile = request.user.userprofile_set.first()
-
-            if profile and profile.is_verified:
-                return redirect('home')
-
-        return view_func(request, *args, **kwargs)
-
-    return wrapper
-
-def profile_completion_required(view_func):
-    def wrapper(request, *args, **kwargs):
-
-        if request.user.is_authenticated:
-            profile = request.user.userprofile_set.first()
-
-            if profile and not profile.is_verified:
-                return redirect('verify_email')
-            
-            if profile and profile.account_complete:
-                return redirect('home')
-
-        return view_func(request, *args, **kwargs)
-
-    return wrapper
+from final import decorators
 
 # Create your views here.
-@anonymous_required
+decorators.anonymous_required
 def register_view(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
@@ -68,7 +23,7 @@ def register_view(request):
         form = RegisterForm()
     return render(request, 'register.html', {'form':form})
 
-@anonymous_required
+decorators.anonymous_required
 def login_view(request):
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -89,15 +44,15 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
+decorators.completion_required
 @login_required
-@completion_required
 def home(request):
     return render(request, 'home.html')
 
 from django.contrib.auth.decorators import login_required
 
+decorators.profile_completion_required
 @login_required
-@profile_completion_required
 def account_completion(request):
 
     profile = UserProfile.objects.get(user=request.user)
@@ -130,8 +85,8 @@ def send_otp(user):
         fail_silently=False
     )
 
+decorators.verification_required
 @login_required
-@verification_required
 def verify_email(request):
 
     otp_obj = EmailOTP.objects.filter(user=request.user).last()
