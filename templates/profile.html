@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load static %}
+{% load usernames_filter %}
+
+{% block title %}Final| Profile{% endblock %}
+{% block style %}{% static "css/profile.css" %}{% endblock %}
+
+{% block content %}
+<h2>Welcome {{ request.user.username|mask_username }}</h2>
+
+<p>You are logged in as {{ request.user.email }}</p>
+
+<img src="{{ profile.profile_pic.url }}" alt="Profile Picture">
+<p>First Name: {{ profile.first_name }}</p>
+<p>Last Name: {{ profile.last_name }}</p>
+<a href="{% url 'home' %}">Home</a>
+{% endblock %}
