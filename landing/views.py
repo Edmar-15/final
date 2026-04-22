@@ -9,6 +9,13 @@ def welcome(request):
 @login_required
 def profile(request):
     userProfile = request.user.userprofile
+
+    if request.method == "POST":
+        if request.FILES.get("profile_pic"):
+            userProfile.profile_pic = request.FILES["profile_pic"]
+            userProfile.save()
+            return redirect("profile") 
+
     return render(request, 'profile.html', {
         'profile': userProfile,
     })

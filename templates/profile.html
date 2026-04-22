@@ -10,7 +10,12 @@
 
 <p>You are logged in as {{ request.user.email }}</p>
 
-<img src="{{ profile.profile_pic.url }}" alt="Profile Picture">
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <img src="{{ profile.profile_pic.url }}" alt="Profile Picture">
+    <input type="file" name="profile_pic" required>
+    <button type="submit">Change Photo</button>
+</form>
 <p>First Name: {{ profile.first_name }}</p>
 <p>Last Name: {{ profile.last_name }}</p>
 <a href="{% url 'home' %}">Home</a>

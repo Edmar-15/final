@@ -33,7 +33,7 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
-            profile = user.userprofile_set.first()
+            profile = request.user.userprofile
             if not profile or not profile.is_verified:
                 return redirect('account_completion')
             return redirect('home')
