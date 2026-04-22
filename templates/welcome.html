@@ -1,18 +1,93 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% load static %}
 
-{% block title %}Final| Welcome{% endblock %}
+{% block title %}Final | Welcome{% endblock %}
 {% block style %}{% static "css/welcome.css" %}{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1>Welcome Page</h1>
-    <a href="{% url "login" %}">Login</a>
-    <nav>
-        <a href="">simple</a>
-        <a href="">simple</a>
-        <p>dropdown</p>
-        <p>dropdown</p>
-        <p>dropdown</p>
-    </nav>
+<div class="welcome-container">
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-left">
+                <h2 class="logo">Final</h2>
+            </div>
+            <div class="nav-center">
+                <a href="{% url 'welcome' %}">Home</a>
+                <a href="#features">Features</a>
+                <a href="{% url 'about' %}">About</a>
+                <a href="{% url 'contact' %}">Contact</a>
+            </div>
+            <div class="nav-right">
+                <a href="{% url 'login' %}" class="btn btn-secondary">Login</a>
+                <a href="{% url 'register' %}" class="btn btn-primary">Sign Up</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">CONNECT WITH YOUR SCHOOL COMMUNITY</h1>
+            <p class="hero-description">
+                Join your batchmates and department peers in meaningful conversations. Ask questions, share knowledge,
+                collaborate on projects, and build lasting connections with fellow students.
+            </p>
+            <div class="hero-buttons">
+                <a href="{% url 'register' %}" class="btn btn-large">Join Your Community</a>
+                <a href="{% url 'login' %}" class="btn btn-large btn-secondary">Already a member?</a>
+            </div>
+        </div>
+        <div class="hero-image">
+            <!-- Placeholder for image -->
+            <div class="placeholder-image">School Community</div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="feature">
+            <div class="feature-content">
+                <h2>CONNECT WITH YOUR BATCH</h2>
+                <p>Chat with students from your same academic year. Share study tips, discuss assignments,
+                organize study groups, and build friendships with your batchmates.</p>
+            </div>
+            <div class="feature-image">
+                <div class="placeholder-image">Batch Chat</div>
+            </div>
+        </div>
+        <div class="feature">
+            <div class="feature-image">
+                <div class="placeholder-image">Department Chat</div>
+            </div>
+            <div class="feature-content">
+                <h2>DEPARTMENT-WISE DISCUSSIONS</h2>
+                <p>Join department-specific channels for Computer Science, Engineering, Business, Arts, and more.
+                Get specialized help, share department news, and connect with like-minded peers.</p>
+            </div>
+        </div>
+        <div class="feature">
+            <div class="feature-content">
+                <h2>ASK QUESTIONS & GET HELP</h2>
+                <p>Have a doubt about your coursework? Need clarification on a concept? Post in the community
+                and get answers from fellow students, seniors, or even faculty members.</p>
+            </div>
+            <div class="feature-image">
+                <div class="placeholder-image">Q&A Community</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2026 School Community Chat. Connecting students, building futures.</p>
+            <div class="footer-links">
+                <a href="#privacy">Privacy Policy</a>
+                <a href="#terms">Terms of Service</a>
+                <a href="#support">Student Support</a>
+            </div>
+        </div>
+    </footer>
+</div>
 {% endblock %}
