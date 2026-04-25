@@ -44,10 +44,10 @@ class User(AbstractBaseUser, PermissionsMixin):
 class UserProfile(models.Model):
     first_name = models.CharField(max_length=150, null=True)
     last_name = models.CharField(max_length=150, null=True)
-    profile_pic = models.ImageField(upload_to='profiles/', default='default.png')
+    profile_pic = models.ImageField(upload_to='profiles/', default='profiles/default.png')
     is_verified = models.BooleanField(default=False)
     account_complete = models.BooleanField(default=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'account_user_profile'
