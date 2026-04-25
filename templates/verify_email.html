@@ -1,19 +1,25 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block title %}Final | Verify Email{% endblock %}
 {% block style %}{% static "css/verification.css" %}{% endblock %}
 
 {% block content %}
-<h2>Email Verification</h2>
-
-<p>Enter the OTP sent to your email.</p>
-
 <form method="POST">
     {% csrf_token %}
-    <input type="text" name="otp" placeholder="Enter OTP">
-    <button type="submit">Verify</button>
+    <h2>Email Verification</h2>
+    <p>We've sent a verification code to your email. Enter it below to continue.</p>
+
+    <div class="form-group">
+        <label for="id_otp">Verification Code</label>
+        <input type="text" id="id_otp" name="otp" class="form-input" placeholder="000000" required>
+    </div>
+
+    {% if error %}
+        <p class="error-message">{{ error }}</p>
+    {% endif %}
+
+    <button type="submit">Verify Email</button>
+    <a href="?resend=1">Request a new one</a>
 </form>
-{% if error %}
-    <p style="color: red;">{{ error }}</p>
-{% endif %}
 {% endblock %}

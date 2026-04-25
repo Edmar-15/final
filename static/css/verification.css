@@ -1,0 +1,217 @@
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    font-family: 'Whitney', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+    background: linear-gradient(135deg, #ffffff 0%, #e3f2fd 50%, #bbdefb 100%);
+    background-attachment: fixed;
+    color: #1565c0;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+        radial-gradient(circle at 25% 25%, rgba(21, 101, 192, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(21, 101, 192, 0.03) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    text-align: center;
+    color: #1565c0;
+}
+
+p {
+    color: #424242;
+    font-size: 1rem;
+    line-height: 1.7;
+    text-align: center;
+    margin-bottom: 1.75rem;
+}
+
+form {
+    width: min(100%, 420px);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(21, 101, 192, 0.1);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(21, 101, 192, 0.1);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="file"],
+textarea,
+select {
+    width: 100%;
+    padding: 0.95rem 1rem;
+    margin-bottom: 1rem;
+    border-radius: 12px;
+    border: 1px solid rgba(21, 101, 192, 0.2);
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #1565c0;
+    font-size: 1rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="file"]:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: #1565c0;
+    box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.1);
+}
+
+form p {
+    margin-bottom: 1rem;
+}
+
+form p label {
+    display: block;
+    color: #424242;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+form p input[type="text"],
+form p input[type="email"],
+form p input[type="password"],
+form p input[type="file"],
+form p textarea,
+form p select {
+    width: 100%;
+    padding: 0.95rem 1rem;
+    border-radius: 12px;
+    border: 1px solid rgba(21, 101, 192, 0.2);
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #1565c0;
+    font-size: 1rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+form p input[type="text"]:focus,
+form p input[type="email"]:focus,
+form p input[type="password"]:focus,
+form p input[type="file"]:focus,
+form p textarea:focus,
+form p select:focus {
+    outline: none;
+    border-color: #1565c0;
+    box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.1);
+}
+
+button {
+    width: 100%;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(45deg, #1565c0, #42a5f5);
+    color: #ffffff;
+    padding: 0.95rem 1rem;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(21, 101, 192, 0.3);
+}
+
+button:hover {
+    background: linear-gradient(45deg, #0d47a1, #1976d2);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(21, 101, 192, 0.4);
+}
+
+a {
+    display: block;
+    text-align: center;
+    margin-top: 1.25rem;
+    color: #1565c0;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+a:hover {
+    color: #42a5f5;
+}
+
+.error-message,
+form > p[style] {
+    background: rgba(244, 67, 54, 0.08);
+    color: #c62828;
+    border: 1px solid rgba(244, 67, 54, 0.3);
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    margin-top: 0.75rem;
+    text-align: center;
+}
+
+.errorlist {
+    color: #c62828;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    padding: 0;
+    list-style: none;
+}
+
+.errorlist li {
+    margin-bottom: 0.25rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    color: #424242;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 520px) {
+    body {
+        padding: 1rem;
+    }
+
+    form {
+        padding: 1.5rem;
+    }
+
+    h2 {
+        font-size: 1.7rem;
+    }
+}
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .verification-form {
+        padding: 1.5rem;
+    }
+
+    .form-title {
+        font-size: 1.3rem;
+    }
+}
