@@ -1,0 +1,113 @@
+﻿{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Final | About{% endblock %}
+{% block style %}{% static "css/welcome.css" %}{% endblock %}
+
+{% block content %}
+<div class="welcome-container">
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-left">
+                <h2 class="logo">Final</h2>
+            </div>
+            <div class="nav-center">
+                <a href="{% url 'welcome' %}">Home</a>
+                <a href="#features">Features</a>
+                <a href="{% url 'about' %}">About</a>
+                <a href="{% url 'contact' %}">Contact</a>
+            </div>
+            <div class="nav-right">
+                <a href="{% url 'login' %}" class="btn btn-secondary">Login</a>
+                <a href="{% url 'register' %}" class="btn btn-primary">Sign Up</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- About Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">About Our School Community</h1>
+            <p class="hero-description">
+                Welcome to our School Community Chat platform! We're dedicated to fostering meaningful connections between students,
+                creating a supportive learning environment where knowledge sharing and collaboration thrive.
+            </p>
+        </div>
+        <div class="hero-image">
+            <div class="placeholder-image">About Our Community</div>
+        </div>
+    </section>
+
+    <!-- About Content Sections -->
+    <section class="features">
+        <div class="feature">
+            <div class="feature-content">
+                <h2>Our Mission</h2>
+                <p>Our mission is to bridge the gap between classroom learning and peer interaction. Whether you're struggling with
+                coursework, looking for study partners, or simply want to connect with fellow students, our platform provides
+                the perfect space for academic and social growth.</p>
+            </div>
+            <div class="feature-image">
+                <div class="placeholder-image">Our Mission</div>
+            </div>
+        </div>
+
+        <div class="feature">
+            <div class="feature-image">
+                <div class="placeholder-image">Community Features</div>
+            </div>
+            <div class="feature-content">
+                <h2>Community Features</h2>
+                <ul class="feature-list">
+                    <li><strong>Batch-wise Chats:</strong> Connect with students from your academic year</li>
+                    <li><strong>Department Channels:</strong> Specialized discussions for each field of study</li>
+                    <li><strong>Q&A Community:</strong> Get help from peers and seniors</li>
+                    <li><strong>Study Groups:</strong> Form and join collaborative learning communities</li>
+                    <li><strong>Event Coordination:</strong> Stay updated on campus activities and events</li>
+                    <li><strong>Resource Sharing:</strong> Exchange notes, study materials, and helpful resources</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="feature">
+            <div class="feature-content">
+                <h2>Our Community</h2>
+                <p>We are a diverse community of students from various backgrounds, departments, and academic years.
+                Together, we create an inclusive environment where every student can thrive academically and socially.
+                Our platform is moderated to ensure a safe, respectful, and productive space for all members.</p>
+            </div>
+            <div class="feature-image">
+                <div class="placeholder-image">Diverse Community</div>
+            </div>
+        </div>
+
+        <div class="feature">
+            <div class="feature-image">
+                <div class="placeholder-image">Join Us</div>
+            </div>
+            <div class="feature-content">
+                <h2>Join the Conversation</h2>
+                <p>Ready to connect with your fellow students? Join our community today and be part of something bigger.
+                Whether you're a freshman looking for guidance or a senior ready to mentor, there's a place for you here.</p>
+                <div class="hero-buttons">
+                    <a href="{% url 'register' %}" class="btn btn-primary btn-large">Join Our Community</a>
+                    <a href="{% url 'login' %}" class="btn btn-secondary">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2026 Final. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#privacy">Privacy</a>
+                <a href="#terms">Terms</a>
+                <a href="#support">Support</a>
+            </div>
+        </div>
+    </footer>
+</div>
+{% endblock %}

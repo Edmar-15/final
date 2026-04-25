@@ -59,13 +59,14 @@ def register_view(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            UserProfile.objects.get_or_create(user=user)
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password'])
+            user.save()
             login(request, user)
             return redirect('verify_email')
     else:
         form = RegisterForm()
-    return render(request, 'register.html', {'form': form})
+    return render(request, 'register.html', {'form':form})
 
 @anonymous_required
 def login_view(request):
@@ -154,7 +155,7 @@ def verify_email(request):
             return render(request, "verify_email.html", {"error": "OTP expired. New OTP sent."})
 
         if otp_obj.otp == otp:
-            profile, _ = UserProfile.objects.get_or_create(user=request.user)
+            profile = UserProfile.objects.get(user=request.user)
             profile.is_verified = True
             profile.save()
 

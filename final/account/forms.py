@@ -12,11 +12,10 @@ class RegisterForm(forms.ModelForm):
     password1 = forms.CharField(widget=forms.PasswordInput, label="Password")
     password2 = forms.CharField(widget=forms.PasswordInput, label="Confirm Password")
 
-
     class Meta:
         model = User
         fields = [
-            'email', 
+            'email',
         ]
 
     def clean(self):
@@ -34,7 +33,6 @@ class RegisterForm(forms.ModelForm):
             raise forms.ValidationError("Password must be at least 8 characters")
 
         return cleaned_data
-
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
@@ -58,11 +56,7 @@ class RegisterForm(forms.ModelForm):
     def save(self, commit=True):
         email = self.cleaned_data['email']
         password = self.cleaned_data['password1']
-        username = email.split('@')[0]
-        user = User(email=email, username=username)
-        user.set_password(password)
-        if commit:
-            user.save()
+        user = User.objects.create_user(email=email, password=password)
         return user
     
 class AccountCompletion(forms.ModelForm):
@@ -73,8 +67,3 @@ class AccountCompletion(forms.ModelForm):
             'last_name',
             'profile_pic',
         ]
-        widgets = {
-            'first_name': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Enter your first name'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Enter your last name'}),
-            'profile_pic': forms.FileInput(attrs={'class': 'form-file', 'accept': 'image/*'}),
-        }
