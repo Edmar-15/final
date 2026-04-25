@@ -9,7 +9,7 @@ from datetime import timedelta
 from final import decorators
 
 # Create your views here.
-decorators.anonymous_required
+@decorators.anonymous_required
 def register_view(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
@@ -22,7 +22,7 @@ def register_view(request):
         form = RegisterForm()
     return render(request, 'register.html', {'form': form})
 
-decorators.anonymous_required
+@decorators.anonymous_required
 def login_view(request):
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -32,9 +32,18 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
-            profile = request.user.userprofile
-            if not profile or not profile.is_verified:
+
+            profile = getattr(request.user, 'userprofile', None)
+
+            if not profile:
+                profile = UserProfile.objects.create(user=request.user)
+
+            if not profile.is_verified:
+                return redirect('verify_email')
+
+            if not profile.account_complete:
                 return redirect('account_completion')
+
             return redirect('home')
         
     return render(request, 'login.html')
@@ -43,18 +52,19 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
-decorators.completion_required
 @login_required
+@decorators.verification_required
+@decorators.completion_required
 def home(request):
     return render(request, 'home.html')
 
 from django.contrib.auth.decorators import login_required
 
-decorators.profile_completion_required
 @login_required
+@decorators.verification_required
 def account_completion(request):
 
-    profile = UserProfile.objects.get(user=request.user)
+    profile = request.user.userprofile
 
     if request.method == "POST":
         form = AccountCompletion(request.POST, request.FILES, instance=profile)
@@ -86,9 +96,12 @@ def send_otp(user):
         fail_silently=False
     )
 
-decorators.verification_required
 @login_required
 def verify_email(request):
+    profile = getattr(request.user, 'userprofile', None)
+
+    if profile and profile.is_verified:
+        return redirect('home')
 
     otp_obj = EmailOTP.objects.filter(user=request.user).last()
 
