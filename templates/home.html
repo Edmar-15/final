@@ -11,5 +11,14 @@
 <p>You are logged in as {{ request.user.email }}</p>
 <a href="{% url 'profile' %}">Profile</a>
 
+<div>
+    <h1>Server Lists</h1>
+    {% for servers in server %}
+    <p>{{ servers.name }}</p>
+    {% empty %}
+    <p>No Servers Found</p>
+    {% endfor %}
+</div>
+
 <a href="{% url 'logout' %}">Logout</a>
 {% endblock %}

@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager, User
 from django.db import models
 import random
+from departments.models import Server
 
 # Create your models here.
 class UserManager(BaseUserManager):
@@ -48,6 +49,7 @@ class UserProfile(models.Model):
     is_verified = models.BooleanField(default=False)
     account_complete = models.BooleanField(default=False)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    server = models.ForeignKey(Server, default= 1, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'account_user_profile'
