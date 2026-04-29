@@ -262,14 +262,57 @@ button {
     border-top: 1px solid rgba(21, 101, 192, 0.14);
 }
 
+.chat-input-row {
+    display: flex;
+    width: 100%;
+}
+
+.chat-input-inner {
+    position: relative;
+    flex: 1;
+}
+
 .chat-input input {
     width: 100%;
-    padding: 14px 16px;
+    padding: 14px 130px 14px 16px;
     border-radius: 14px;
     border: 1px solid rgba(21, 101, 192, 0.18);
     background: #ffffff;
     color: #1565c0;
     transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.chat-input-actions {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.chat-input-actions .icon-button {
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border: none;
+    border-radius: 12px;
+    background: rgba(21, 101, 192, 0.08);
+    color: #1565c0;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.chat-input-actions .icon-button:hover {
+    background: rgba(21, 101, 192, 0.18);
+    transform: translateY(-1px);
+    cursor: pointer;
+}
+
+.chat-input-actions .input-icon {
+    width: 18px;
+    height: 18px;
 }
 
 .chat-input input::placeholder {
@@ -291,12 +334,44 @@ button {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 18px;
+    gap: 10px;
 }
 
 .sidebar-top h3 {
     margin: 0;
     font-size: 1rem;
     color: #1565c0;
+    flex: 1;
+    text-align: center;
+}
+
+.profile-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 18px;
+    background: rgba(227, 242, 253, 0.92);
+    border: 1px solid rgba(21, 101, 192, 0.18);
+    color: #1565c0;
+    text-decoration: none;
+    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.profile-link:hover {
+    transform: translateY(-1px);
+    background: rgba(66, 165, 245, 0.18);
+}
+
+.profile-link .profile-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.profile-name {
+    font-weight: 700;
+    color: #10243b;
 }
 
 .channels-list {
@@ -340,11 +415,12 @@ hr {
 
 .sidebar-links {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
     gap: 10px;
     margin-top: auto;
-    justify-content: flex-start;
-    padding-left: 8px;
-    padding-top: 12px;
+    width: 100%;
+    padding: 16px 8px 8px;
     border-top: 1px solid rgba(21, 101, 192, 0.14);
 }
 

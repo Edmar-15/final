@@ -16,8 +16,6 @@
         {% empty %}
             <p class="empty-text">No Servers</p>
         {% endfor %}
-
-        <button class="server-add" title="Create server">+</button>
     </aside>
 
     <main class="chat-area">
@@ -63,9 +61,30 @@
 
         <footer class="chat-input">
             {% if active_channel %}
-            <form method="POST" action="{% url 'chat' active_channel.id %}">
+            <form method="POST" action="{% url 'chat' active_channel.id %}" class="chat-form">
                 {% csrf_token %}
-                <input type="text" name="message" autocomplete="off" placeholder="Message #{{ active_channel.name }}">
+                <div class="chat-input-row">
+                    <div class="chat-input-inner">
+                        <input type="text" name="message" autocomplete="off" placeholder="Message #{{ active_channel.name }}">
+                        <div class="chat-input-actions">
+                            <button type="button" class="icon-button emoji-button" title="Insert emoji" aria-label="Insert emoji">
+                                <svg viewBox="0 0 24 24" class="input-icon" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5" />
+                                    <circle cx="8.5" cy="10" r="1.25" fill="currentColor" />
+                                    <circle cx="15.5" cy="10" r="1.25" fill="currentColor" />
+                                    <path d="M8.5 15.5C9.5 17 11 18 12.5 18C14 18 15.5 17 16.5 15.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                </svg>
+                            </button>
+                            <button type="button" class="icon-button image-button" title="Upload image" aria-label="Upload image">
+                                <svg viewBox="0 0 24 24" class="input-icon" aria-hidden="true">
+                                    <rect x="4" y="6" width="16" height="12" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="1.5" />
+                                    <circle cx="8.5" cy="9.5" r="1.5" fill="currentColor" />
+                                    <path d="M4 16.5L9 11.5L13 15.5L18 10.5L20 13.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </form>
             {% endif %}
         </footer>
@@ -88,8 +107,9 @@
         <hr>
 
         <nav class="sidebar-links">
-            <a href="{% url 'profile' %}" class="icon-link profile" title="Profile" aria-label="Profile">
+            <a href="{% url 'profile' %}" class="profile-link" title="Profile" aria-label="Profile">
                 <img src="{{ request.user.userprofile.profile_pic.url }}" alt="{{ request.user.username }} profile" class="profile-icon">
+                <span class="profile-name">{% if request.user.userprofile and request.user.userprofile.first_name %}{{ request.user.userprofile.first_name }}{% else %}{{ request.user.username }}{% endif %}</span>
             </a>
             <a href="{% url 'logout' %}" class="icon-link logout" title="Logout" aria-label="Logout">
                 <svg viewBox="0 0 24 24" class="icon-svg" aria-hidden="true">
