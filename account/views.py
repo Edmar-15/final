@@ -7,7 +7,7 @@ from django.core.mail import send_mail
 from django.utils import timezone
 from datetime import timedelta
 from final import decorators
-from departments.models import Server
+from departments.models import Server, Channel, Message
 
 # Create your views here.
 @decorators.anonymous_required
@@ -58,10 +58,20 @@ def logout_view(request):
 @decorators.completion_required
 def home(request):
     servers = Server.objects.all()
+    channels= Channel.objects.all()
 
-    return render(request, 'home.html', {'server' : servers})
+    active_channel = channels.first()
 
-from django.contrib.auth.decorators import login_required
+    messages = Message.objects.filter(
+        channel=active_channel
+    ).order_by('created_at')
+
+    return render(request, 'home.html', {
+        'server' : servers,
+        'channel' : channels,
+        'active_channel': active_channel,
+        'messages': messages
+        })
 
 @login_required
 @decorators.verification_required

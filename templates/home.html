@@ -2,23 +2,77 @@
 {% load static %}
 {% load usernames_filter %}
 
-{% block title %}Final| Home{% endblock %}
+{% block title %}Final | Home{% endblock %}
 {% block style %}{% static "css/home.css" %}{% endblock %}
 
 {% block content %}
-<h2>Welcome {{ request.user.username|mask_username }}</h2>
 
-<p>You are logged in as {{ request.user.email }}</p>
-<a href="{% url 'profile' %}">Profile</a>
+<div class="discord-layout">
 
-<div>
-    <h1>Server Lists</h1>
-    {% for servers in server %}
-    <p>{{ servers.name }}</p>
-    {% empty %}
-    <p>No Servers Found</p>
-    {% endfor %}
+    <!-- LEFT: SERVERS -->
+    <div class="sidebar-servers">
+        {% for servers in server %}
+            <div class="server-item">
+                {{ servers.name }}
+            </div>
+        {% empty %}
+            <p class="empty-text">No Servers</p>
+        {% endfor %}
+    </div>
+
+    <!-- MIDDLE: CHAT -->
+    <div class="chat-area">
+
+        <!-- HEADER -->
+        <div class="chat-header">
+            <h3># {{ active_channel.name }}</h3>
+            <span class="user-info">
+                {{ request.user.username|mask_username }}
+            </span>
+        </div>
+
+        <!-- MESSAGES -->
+        <div class="chat-messages">
+            {% for msg in messages %}
+                <div class="message">
+                    <strong>{{ msg.user.username }}</strong>: {{ msg.content }}
+                </div>
+            {% empty %}
+                <div class="message">
+                    <strong>System:</strong> No messages yet
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- INPUT -->
+        <div class="chat-input">
+            {% if active_channel %}
+            <form method="POST" action="{% url 'chat' active_channel.id %}">
+            {% endif %}
+                {% csrf_token %}
+                <input type="text" name="message" placeholder="Message #{{ active_channel.name }}">
+            </form>
+        </div>
+
+    </div>
+
+    <!-- RIGHT: CHANNELS -->
+    <div class="sidebar-channels">
+        <h3>Channels</h3>
+
+        {% for channels in channel %}
+            <a href="{% url 'chat' channels.id %}" 
+            class="channel-item {% if channels.id == active_channel.id %}active{% endif %}">
+                # {{ channels.name }}
+            </a>
+        {% endfor %}
+
+        <hr>
+
+        <a href="{% url 'profile' %}" class="link">Profile</a>
+        <a href="{% url 'logout' %}" class="link logout">Logout</a>
+    </div>
+
 </div>
 
-<a href="{% url 'logout' %}">Logout</a>
 {% endblock %}
