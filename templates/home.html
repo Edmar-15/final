@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% load static %}
 {% load usernames_filter %}
 
@@ -8,71 +8,96 @@
 {% block content %}
 
 <div class="discord-layout">
-
-    <!-- LEFT: SERVERS -->
-    <div class="sidebar-servers">
+    <aside class="sidebar-servers">
         {% for servers in server %}
-            <div class="server-item">
+            <div class="server-item" title="{{ servers.name }}">
                 {{ servers.name }}
             </div>
         {% empty %}
             <p class="empty-text">No Servers</p>
         {% endfor %}
-    </div>
 
-    <!-- MIDDLE: CHAT -->
-    <div class="chat-area">
+        <button class="server-add" title="Create server">+</button>
+    </aside>
 
-        <!-- HEADER -->
-        <div class="chat-header">
-            <h3># {{ active_channel.name }}</h3>
-            <span class="user-info">
-                {{ request.user.username|mask_username }}
-            </span>
+    <main class="chat-area">
+        <header class="chat-header">
+            <div class="header-title">
+                <h3># {{ active_channel.name }}</h3>
+            </div>
+            <div class="header-center">
+                <form class="header-search" action="#" method="GET">
+                    <span class="search-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" class="icon-svg" aria-hidden="true">
+                            <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C8.01 14 6 11.99 6 9.5S8.01 5 10.5 5 15 7.01 15 9.5 12.99 14 10.5 14z" />
+                        </svg>
+                    </span>
+                    <input type="search" name="q" placeholder="Search #{{ active_channel.name }}" aria-label="Search messages">
+                </form>
+            </div>
+            <div class="header-actions">
+                <button class="icon-button" title="Channel members" aria-label="Channel members">
+                    <svg viewBox="0 0 24 24" class="icon-svg" aria-hidden="true">
+                        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5C15 14.17 10.33 13 8 13zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <section class="chat-messages">
+            {% for msg in messages %}
+                <article class="message">
+                    <div class="message-meta">
+                        <span class="message-user">{{ msg.user.username }}</span>
+                        <span class="message-meta-separator">•</span>
+                        <span class="message-time">{{ msg.created_at|date:"H:i" }}</span>
+                    </div>
+                    <p>{{ msg.content }}</p>
+                </article>
+            {% empty %}
+                <article class="message empty">
+                    <strong>System:</strong> No messages yet
+                </article>
+            {% endfor %}
+        </section>
+
+        <footer class="chat-input">
+            {% if active_channel %}
+            <form method="POST" action="{% url 'chat' active_channel.id %}">
+                {% csrf_token %}
+                <input type="text" name="message" autocomplete="off" placeholder="Message #{{ active_channel.name }}">
+            </form>
+            {% endif %}
+        </footer>
+    </main>
+
+    <aside class="sidebar-channels">
+        <div class="sidebar-top">
+            <h3>Channels</h3>
+            <button class="icon-button" title="New channel">+</button>
         </div>
 
-        <!-- MESSAGES -->
-        <div class="chat-messages">
-            {% for msg in messages %}
-                <div class="message">
-                    <strong>{{ msg.user.username }}</strong>: {{ msg.content }}
-                </div>
-            {% empty %}
-                <div class="message">
-                    <strong>System:</strong> No messages yet
-                </div>
+        <div class="channels-list">
+            {% for channels in channel %}
+                <a href="{% url 'chat' channels.id %}" class="channel-item {% if channels.id == active_channel.id %}active{% endif %}">
+                    <span class="channel-hash">#</span>{{ channels.name }}
+                </a>
             {% endfor %}
         </div>
 
-        <!-- INPUT -->
-        <div class="chat-input">
-            {% if active_channel %}
-            <form method="POST" action="{% url 'chat' active_channel.id %}">
-            {% endif %}
-                {% csrf_token %}
-                <input type="text" name="message" placeholder="Message #{{ active_channel.name }}">
-            </form>
-        </div>
-
-    </div>
-
-    <!-- RIGHT: CHANNELS -->
-    <div class="sidebar-channels">
-        <h3>Channels</h3>
-
-        {% for channels in channel %}
-            <a href="{% url 'chat' channels.id %}" 
-            class="channel-item {% if channels.id == active_channel.id %}active{% endif %}">
-                # {{ channels.name }}
-            </a>
-        {% endfor %}
-
         <hr>
 
-        <a href="{% url 'profile' %}" class="link">Profile</a>
-        <a href="{% url 'logout' %}" class="link logout">Logout</a>
-    </div>
-
+        <nav class="sidebar-links">
+            <a href="{% url 'profile' %}" class="icon-link profile" title="Profile" aria-label="Profile">
+                <img src="{{ request.user.userprofile.profile_pic.url }}" alt="{{ request.user.username }} profile" class="profile-icon">
+            </a>
+            <a href="{% url 'logout' %}" class="icon-link logout" title="Logout" aria-label="Logout">
+                <svg viewBox="0 0 24 24" class="icon-svg" aria-hidden="true">
+                    <path d="M16.5 11H5v2h11.5v3l4.5-4-4.5-4v3zM5 19h9v2H5c-1.1 0-2-.9-2-2V7c0-1.1.9-2 2-2h9v2H5v12z" />
+                </svg>
+            </a>
+        </nav>
+    </aside>
 </div>
 
 {% endblock %}
