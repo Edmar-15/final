@@ -30,27 +30,24 @@
                             <img src="{{ profile.profile_pic.url }}" class="profile-picture">
                         </div>
 
-                        <form method="POST"
-                              action="{% url 'profile' %}"
-                              enctype="multipart/form-data"
-                              class="profile-pic-form">
+                        <form id="profileForm"
+                            method="POST"
+                            enctype="multipart/form-data"
+                            action="{% url 'profile' %}"
+                            class="profile-pic-form">
 
                             {% csrf_token %}
 
-                            <div class="form-group">
-                                <label class="form-label">Change Profile Picture</label>
+                            <input type="file"
+                                id="id_profile_pic"
+                                name="profile_pic"
+                                accept="image/*"
+                                hidden>
 
-                                <input type="file"
-                                       id="id_profile_pic"
-                                       name="profile_pic"
-                                       accept="image/*"
-                                       hidden>
-
-                                <button type="button" id="uploadBtn" class="custom-upload-btn">
-                                    Choose File
-                                    <span id="fileNameTooltip" class="file-tooltip"></span>
-                                </button>
-                            </div>
+                            <button type="button" id="uploadBtn" class="custom-upload-btn">
+                                Choose File
+                                <span id="fileNameTooltip" class="file-tooltip"></span>
+                            </button>
 
                             <button type="submit" class="btn btn-primary">
                                 Update Photo
@@ -227,31 +224,62 @@
     }
 
     document.addEventListener("DOMContentLoaded", function () {
+
+        const form = document.getElementById("profileForm");
         const fileInput = document.getElementById("id_profile_pic");
         const uploadBtn = document.getElementById("uploadBtn");
         const tooltip = document.getElementById("fileNameTooltip");
+        const profileImg = document.querySelector(".profile-picture");
 
-        if (uploadBtn) {
-            uploadBtn.addEventListener("click", () => {
-                fileInput.click();
-            });
-        }
+        // open file picker
+        uploadBtn.addEventListener("click", () => {
+            fileInput.click();
+        });
 
-        if (fileInput) {
-            fileInput.addEventListener("change", () => {
-                if (fileInput.files.length > 0) {
-                    const fileName = fileInput.files[0].name;
+        // file name preview
+        fileInput.addEventListener("change", () => {
+            if (fileInput.files.length > 0) {
+                tooltip.textContent = fileInput.files[0].name;
+            }
+        });
 
-                    uploadBtn.classList.add("uploaded");
-                    uploadBtn.childNodes[0].nodeValue = "File Uploaded ";
-                    tooltip.textContent = fileName;
-                } else {
-                    uploadBtn.classList.remove("uploaded");
-                    uploadBtn.childNodes[0].nodeValue = "Choose File ";
-                    tooltip.textContent = "";
+        // AJAX submit
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const formData = new FormData();
+            const file = fileInput.files[0];
+
+            if (!file) return;
+
+            formData.append("profile_pic", file);
+
+            fetch("{% url 'profile' %}", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}"
                 }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+
+                    // update image instantly
+                    profileImg.src = data.image_url + "?t=" + new Date().getTime();
+
+                    // reset input
+                    fileInput.value = "";
+                    tooltip.textContent = "";
+
+                    // keep modal open (do nothing)
+                }
+            })
+            .catch(err => {
+                console.error("Upload failed", err);
             });
-        }
+        });
+
     });
 </script>
 

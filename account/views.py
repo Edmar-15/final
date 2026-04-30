@@ -16,11 +16,11 @@ def register_view(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
-            UserProfile.objects.get_or_create(user=user)
             login(request, user)
             return redirect('verify_email')
     else:
         form = RegisterForm()
+
     return render(request, 'register.html', {'form': form})
 
 @decorators.anonymous_required
@@ -34,10 +34,7 @@ def login_view(request):
         if user is not None:
             login(request, user)
 
-            profile = getattr(request.user, 'userprofile', None)
-
-            if not profile:
-                profile = UserProfile.objects.create(user=request.user)
+            profile = request.user.userprofile  # safe now (signal guarantees existence)
 
             if not profile.is_verified:
                 return redirect('verify_email')
@@ -46,7 +43,7 @@ def login_view(request):
                 return redirect('account_completion')
 
             return redirect('home')
-        
+
     return render(request, 'login.html')
     
 def logout_view(request):
@@ -58,21 +55,22 @@ def logout_view(request):
 @decorators.completion_required
 def home(request):
     servers = Server.objects.all()
-    channels= Channel.objects.all()
-
+    channels = Channel.objects.all()
     active_channel = channels.first()
 
     messages = Message.objects.filter(
         channel=active_channel
     ).order_by('created_at')
 
+    profile = request.user.userprofile
+
     return render(request, 'home.html', {
-        'server' : servers,
-        'channel' : channels,
+        'server': servers,
+        'channel': channels,
         'active_channel': active_channel,
         'messages': messages,
-        'profile': request.user.userprofile
-        })
+        'profile': profile
+    })
 
 @login_required
 @decorators.verification_required
