@@ -25,7 +25,6 @@ urlpatterns = [
     path('', welcome, name='welcome'),
     path('accounts/', include('account.urls')),
     path('piyu/', include('landing.urls')),
-    path('server/', include('departments.urls')),
 ]
 
 if settings.DEBUG:

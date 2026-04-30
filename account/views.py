@@ -7,7 +7,7 @@ from django.core.mail import send_mail
 from django.utils import timezone
 from datetime import timedelta
 from final import decorators
-from departments.models import Server, Channel, Message
+from landing.models import Server, Channel, Message
 
 # Create your views here.
 @decorators.anonymous_required

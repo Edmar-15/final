@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager, User
 from django.db import models
 import random
-from departments.models import Server
+from landing.models import Server
 
 # Create your models here.
 class UserManager(BaseUserManager):
