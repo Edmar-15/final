@@ -44,24 +44,45 @@ def profile(request):
 
 @login_required
 def chat_page(request, channel_id):
-    active_channel = Channel.objects.get(id=channel_id)
+
+    profile = request.user.userprofile
+    server = profile.server
+
+    active_channel = Channel.objects.filter(
+        id=channel_id,
+        server=server
+    ).first()
+
+    if not active_channel:
+        return redirect("home")
+
+    channels = Channel.objects.filter(server=server).order_by('id')
 
     messages = Message.objects.filter(
         channel=active_channel
     ).order_by("created_at")
 
     return render(request, "home.html", {
-        "server": Server.objects.all(),
-        "channel": Channel.objects.all(),
+        "server": [server],
+        "channel": channels,
         "active_channel": active_channel,
         "messages": messages,
-        "profile": request.user.userprofile
+        "profile": profile
     })
 
 @login_required
 @require_POST
 def send_message(request, channel_id):
-    active_channel = Channel.objects.get(id=channel_id)
+
+    server = request.user.userprofile.server
+
+    active_channel = Channel.objects.filter(
+        id=channel_id,
+        server=server
+    ).first()
+
+    if not active_channel:
+        return JsonResponse({"success": False, "error": "Unauthorized"}, status=403)
 
     content = request.POST.get("message", "").strip()
 
@@ -77,6 +98,7 @@ def send_message(request, channel_id):
     return JsonResponse({
         "success": True,
         "message": {
+            "id": msg.id,
             "user": msg.user.username,
             "content": msg.content,
             "time": localtime(msg.created_at).strftime("%H:%M")
@@ -85,15 +107,26 @@ def send_message(request, channel_id):
 
 @login_required
 def fetch_messages(request, channel_id):
+
+    server = request.user.userprofile.server
+
+    channel = Channel.objects.filter(
+        id=channel_id,
+        server=server
+    ).first()
+
+    if not channel:
+        return JsonResponse({"messages": []})
+
     last_id = request.GET.get("last_id", 0)
 
     try:
         last_id = int(last_id)
-    except (ValueError, TypeError):
-        last_id = 0  # fallback
+    except:
+        last_id = 0
 
     messages = Message.objects.filter(
-        channel_id=channel_id,
+        channel=channel,
         id__gt=last_id
     ).order_by("id")
 
@@ -107,3 +140,31 @@ def fetch_messages(request, channel_id):
         })
 
     return JsonResponse({"messages": data})
+
+@login_required
+@require_POST
+def create_channel(request):
+    profile = request.user.userprofile
+    server = profile.server
+
+    name = request.POST.get("name", "").strip()
+
+    if not name:
+        return JsonResponse({"success": False, "error": "Channel name required"})
+
+    # prevent duplicates (same as Meta but cleaner response)
+    if Channel.objects.filter(server=server, name__iexact=name).exists():
+        return JsonResponse({"success": False, "error": "Channel already exists"})
+
+    channel = Channel.objects.create(
+        name=name,
+        server=server
+    )
+
+    return JsonResponse({
+        "success": True,
+        "channel": {
+            "id": channel.id,
+            "name": channel.name
+        }
+    })

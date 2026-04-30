@@ -12,4 +12,5 @@ urlpatterns = [
     path("channel/<int:channel_id>/", views.chat_page, name="chat"),
     path("chat/<int:channel_id>/send/", views.send_message, name="send_message"),
     path("fetch-messages/<int:channel_id>/", views.fetch_messages, name="fetch_messages"),
+    path("create-channel/", views.create_channel, name="create_channel"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
