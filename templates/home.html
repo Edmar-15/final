@@ -145,6 +145,19 @@
                         <input id="chatInput" type="text" name="message" autocomplete="off" placeholder="Message #{{ active_channel.name }}">
                         <div class="chat-input-actions">
                             <button type="button" class="icon-button emoji-button" title="Insert emoji" aria-label="Insert emoji">
+                                <div id="emojiPicker" class="emoji-picker hidden">
+                                    <span>😀</span>
+                                    <span>😁</span>
+                                    <span>😂</span>
+                                    <span>😍</span>
+                                    <span>😎</span>
+                                    <span>🤔</span>
+                                    <span>😢</span>
+                                    <span>😡</span>
+                                    <span>👍</span>
+                                    <span>🔥</span>
+                                    <span>❤️</span>
+                                </div>
                                 <svg viewBox="0 0 24 24" class="input-icon" aria-hidden="true">
                                     <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5" />
                                     <circle cx="8.5" cy="10" r="1.25" fill="currentColor" />
@@ -333,6 +346,29 @@
             .catch(err => console.error("Message send failed:", err));
         });
 
+    });
+
+    const emojiBtn = document.querySelector(".emoji-button");
+    const emojiPicker = document.getElementById("emojiPicker");
+    const input = document.getElementById("chatInput");
+
+    // toggle emoji panel
+    emojiBtn.addEventListener("click", () => {
+        emojiPicker.classList.toggle("hidden");
+    });
+
+    // insert emoji
+    emojiPicker.addEventListener("click", (e) => {
+        if (e.target.tagName === "SPAN") {
+            input.value += e.target.textContent;
+            input.focus();
+        }
+    });
+
+    document.addEventListener("click", (e) => {
+        if (!emojiPicker.contains(e.target) && !emojiBtn.contains(e.target)) {
+            emojiPicker.classList.add("hidden");
+        }
     });
 </script>
 

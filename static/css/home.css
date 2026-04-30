@@ -506,6 +506,28 @@ hr {
     cursor: pointer;
 }
 
+.emoji-picker {
+    position: absolute;
+    bottom: 60px;
+    left: 20px;
+    background: #2b2d31;
+    padding: 10px;
+    border-radius: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 200px;
+}
+
+.emoji-picker span {
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.hidden {
+    display: none;
+}
+
 @media (max-width: 1100px) {
     .discord-layout {
         grid-template-columns: 72px minmax(0, 1fr);

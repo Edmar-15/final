@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 import os
 from django.http import JsonResponse
-from django.utils import timezone
+from django.utils.timezone import localtime
 from .models import Server, Channel, Message
 
 # Create your views here.
@@ -79,6 +79,6 @@ def send_message(request, channel_id):
         "message": {
             "user": msg.user.username,
             "content": msg.content,
-            "time": msg.created_at.strftime("%H:%M")
+            "time": localtime(msg.created_at).strftime("%H:%M")
         }
     })
