@@ -70,7 +70,8 @@ def home(request):
         'server' : servers,
         'channel' : channels,
         'active_channel': active_channel,
-        'messages': messages
+        'messages': messages,
+        'profile': request.user.userprofile
         })
 
 @login_required

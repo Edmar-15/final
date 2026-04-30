@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from account.models import UserProfile
+from django.views.decorators.http import require_POST
 import os
-from django.conf import settings
+from django.urls import reverse
 from django.utils import timezone
 from .models import Server, Channel, Message
 
@@ -15,30 +15,28 @@ def about(request):
 
 def contact(request):
     return render(request, 'contact.html')
+
 @login_required
+@require_POST
 def profile(request):
     userProfile = request.user.userprofile
 
-    if request.method == "POST":
-        new_file = request.FILES.get("profile_pic")
+    new_file = request.FILES.get("profile_pic")
 
-        if new_file:
-            if userProfile.profile_pic:
-                old_file = userProfile.profile_pic
+    if new_file:
+        old_file = userProfile.profile_pic
 
-                if old_file.name != "profiles/default.jpg":
-                    if os.path.isfile(old_file.path):
-                        os.remove(old_file.path)
+        if old_file and old_file.name != "profiles/default.png":
+            try:
+                if os.path.isfile(old_file.path):
+                    os.remove(old_file.path)
+            except Exception:
+                pass
 
-            # save new file
-            userProfile.profile_pic = new_file
-            userProfile.save()
+        userProfile.profile_pic = new_file
+        userProfile.save()
 
-            return redirect("profile")
-
-    return render(request, 'profile.html', {
-        'profile': userProfile,
-    })
+    return redirect(f"{reverse('home')}?updated=true")
 
 @login_required
 def chat_view(request, channel_id):

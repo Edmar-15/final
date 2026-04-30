@@ -4,10 +4,90 @@
 
 {% block title %}Final | Home{% endblock %}
 {% block style %}{% static "css/home.css" %}{% endblock %}
+{% block head %}<link rel="stylesheet" href="{% static "css/profile.css" %}">{% endblock %}
 
 {% block content %}
 
 <div class="discord-layout">
+    <div id="profileModal" class="modal">
+    <div class="modal-content profile-container">
+
+        <span class="close" onclick="closeModal()">&times;</span>
+
+        <div class="profile-content">
+
+            <div class="profile-header">
+                <h1 class="profile-title">Your Profile</h1>
+                <p class="profile-subtitle">Manage your account information</p>
+            </div>
+
+            <div class="profile-card">
+                <div class="profile-info">
+
+                    <!-- LEFT -->
+                    <div class="profile-picture-section">
+                        <div class="profile-picture-container">
+                            <img src="{{ profile.profile_pic.url }}" class="profile-picture">
+                        </div>
+
+                        <form method="POST"
+                              action="{% url 'profile' %}"
+                              enctype="multipart/form-data"
+                              class="profile-pic-form">
+
+                            {% csrf_token %}
+
+                            <div class="form-group">
+                                <label class="form-label">Change Profile Picture</label>
+
+                                <input type="file"
+                                       id="id_profile_pic"
+                                       name="profile_pic"
+                                       accept="image/*"
+                                       hidden>
+
+                                <button type="button" id="uploadBtn" class="custom-upload-btn">
+                                    Choose File
+                                    <span id="fileNameTooltip" class="file-tooltip"></span>
+                                </button>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">
+                                Update Photo
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- RIGHT -->
+                    <div class="profile-details">
+                        <div class="detail-group">
+                            <h3>Username</h3>
+                            <p>{{ request.user.username|mask_username }}</p>
+                        </div>
+
+                        <div class="detail-group">
+                            <h3>Email</h3>
+                            <p>{{ request.user.email }}</p>
+                        </div>
+
+                        <div class="detail-group">
+                            <h3>First Name</h3>
+                            <p>{{ profile.first_name|default:"Not provided" }}</p>
+                        </div>
+
+                        <div class="detail-group">
+                            <h3>Last Name</h3>
+                            <p>{{ profile.last_name|default:"Not provided" }}</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
     <aside class="sidebar-servers">
         {% for servers in server %}
             <div class="server-item" title="{{ servers.name }}">
@@ -107,10 +187,23 @@
         <hr>
 
         <nav class="sidebar-links">
-            <a href="{% url 'profile' %}" class="profile-link" title="Profile" aria-label="Profile">
-                <img src="{{ request.user.userprofile.profile_pic.url }}" alt="{{ request.user.username }} profile" class="profile-icon">
-                <span class="profile-name">{% if request.user.userprofile and request.user.userprofile.first_name %}{{ request.user.userprofile.first_name }}{% else %}{{ request.user.username }}{% endif %}</span>
-            </a>
+            <button onclick="openModal()"
+                    class="profile-link"
+                    title="Profile"
+                    aria-label="Profile">
+
+                <img src="{{ request.user.userprofile.profile_pic.url }}"
+                    alt="{{ request.user.username }} profile"
+                    class="profile-icon">
+
+                <span class="profile-name">
+                    {% if request.user.userprofile and request.user.userprofile.first_name %}
+                        {{ request.user.userprofile.first_name }}
+                    {% else %}
+                        {{ request.user.username }}
+                    {% endif %}
+                </span>
+            </button>
             <a href="{% url 'logout' %}" class="icon-link logout" title="Logout" aria-label="Logout">
                 <svg viewBox="0 0 24 24" class="icon-svg" aria-hidden="true">
                     <path d="M16.5 11H5v2h11.5v3l4.5-4-4.5-4v3zM5 19h9v2H5c-1.1 0-2-.9-2-2V7c0-1.1.9-2 2-2h9v2H5v12z" />
@@ -119,5 +212,47 @@
         </nav>
     </aside>
 </div>
+
+<script>
+    if (window.location.search.includes("updated=true")) {
+        openModal();
+    }
+
+    function openModal() {
+        document.getElementById("profileModal").style.display = "block";
+    }
+
+    function closeModal() {
+        document.getElementById("profileModal").style.display = "none";
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const fileInput = document.getElementById("id_profile_pic");
+        const uploadBtn = document.getElementById("uploadBtn");
+        const tooltip = document.getElementById("fileNameTooltip");
+
+        if (uploadBtn) {
+            uploadBtn.addEventListener("click", () => {
+                fileInput.click();
+            });
+        }
+
+        if (fileInput) {
+            fileInput.addEventListener("change", () => {
+                if (fileInput.files.length > 0) {
+                    const fileName = fileInput.files[0].name;
+
+                    uploadBtn.classList.add("uploaded");
+                    uploadBtn.childNodes[0].nodeValue = "File Uploaded ";
+                    tooltip.textContent = fileName;
+                } else {
+                    uploadBtn.classList.remove("uploaded");
+                    uploadBtn.childNodes[0].nodeValue = "Choose File ";
+                    tooltip.textContent = "";
+                }
+            });
+        }
+    });
+</script>
 
 {% endblock %}
