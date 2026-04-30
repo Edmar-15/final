@@ -82,3 +82,28 @@ def send_message(request, channel_id):
             "time": localtime(msg.created_at).strftime("%H:%M")
         }
     })
+
+@login_required
+def fetch_messages(request, channel_id):
+    last_id = request.GET.get("last_id", 0)
+
+    try:
+        last_id = int(last_id)
+    except (ValueError, TypeError):
+        last_id = 0  # fallback
+
+    messages = Message.objects.filter(
+        channel_id=channel_id,
+        id__gt=last_id
+    ).order_by("id")
+
+    data = []
+    for msg in messages:
+        data.append({
+            "id": msg.id,
+            "user": msg.user.username,
+            "content": msg.content,
+            "time": localtime(msg.created_at).strftime("%H:%M")
+        })
+
+    return JsonResponse({"messages": data})

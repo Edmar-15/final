@@ -119,7 +119,7 @@
             </div>
         </header>
 
-        <section class="chat-messages">
+        <section class="chat-messages" id="messagesContainer" data-last-id="{% if messages %}{{ messages.last.id }}{% else %}0{% endif %}">
             {% for msg in messages %}
                 <article class="message">
                     <div class="message-meta">
@@ -337,6 +337,8 @@
 
                 messagesContainer.appendChild(el);
 
+                messagesContainer.dataset.lastId = msg.id;
+
                 // auto scroll
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
@@ -347,6 +349,49 @@
         });
 
     });
+
+    const container = document.getElementById("messagesContainer");
+
+    function pollMessages() {
+        let lastId = container.dataset.lastId || 0;
+
+        if (!lastId || lastId === "undefined") {
+            lastId = 0;
+        }
+
+        fetch("{% url 'fetch_messages' active_channel.id %}?last_id=" + lastId)
+            .then(res => res.json())
+            .then(data => {
+
+                if (data.messages.length === 0) return;
+
+                data.messages.forEach(msg => {
+                    const el = document.createElement("article");
+                    el.className = "message";
+
+                    el.innerHTML = `
+                        <div class="message-meta">
+                            <span class="message-user">${msg.user}</span>
+                            <span class="message-meta-separator">•</span>
+                            <span class="message-time">${msg.time}</span>
+                        </div>
+                        <p>${msg.content}</p>
+                    `;
+
+                    container.appendChild(el);
+
+                    // update last message id
+                    container.dataset.lastId = msg.id;
+                });
+
+                // auto scroll
+                container.scrollTop = container.scrollHeight;
+            })
+            .catch(err => console.error("Polling error:", err));
+    }
+
+    // run every 2 seconds
+    setInterval(pollMessages, 2000);
 
     const emojiBtn = document.querySelector(".emoji-button");
     const emojiPicker = document.getElementById("emojiPicker");
