@@ -1,7 +1,12 @@
 from django.shortcuts import redirect
+from account.models import UserProfile
 
 def get_profile(user):
-    return getattr(user, 'userprofile', None)
+    if not user.is_authenticated:
+        return None
+
+    profile, created = UserProfile.objects.get_or_create(user=user)
+    return profile
 
 
 def anonymous_required(view_func):
