@@ -34,7 +34,8 @@
                             method="POST"
                             enctype="multipart/form-data"
                             action="{% url 'profile' %}"
-                            class="profile-pic-form">
+                            class="profile-pic-form"
+                            data-profile-url="{% url 'profile' %}">
 
                             {% csrf_token %}
 
@@ -119,7 +120,7 @@
             </div>
         </header>
 
-        <section class="chat-messages" id="messagesContainer" data-last-id="{% if messages %}{{ messages.last.id }}{% else %}0{% endif %}">
+        <section class="chat-messages" id="messagesContainer" data-fetch-url="{% url 'fetch_messages' active_channel.id %}" data-last-id="{% if messages %}{{ messages.last.id }}{% else %}0{% endif %}">
             {% for msg in messages %}
                 <article class="message">
                     <div class="message-meta">
@@ -138,7 +139,7 @@
 
         <footer class="chat-input">
             {% if active_channel %}
-            <form id="chatForm" class="chat-form">
+            <form id="chatForm" class="chat-form" data-send-url="{% url 'send_message' active_channel.id %}">
                 {% csrf_token %}
                 <div class="chat-input-row">
                     <div class="chat-input-inner">
@@ -223,213 +224,7 @@
     </aside>
 </div>
 
-<script>
-    if (window.location.search.includes("updated=true")) {
-        openModal();
-    }
-
-    function openModal() {
-        document.getElementById("profileModal").style.display = "block";
-    }
-
-    function closeModal() {
-        document.getElementById("profileModal").style.display = "none";
-    }
-
-    document.addEventListener("DOMContentLoaded", function () {
-
-        const form = document.getElementById("profileForm");
-        const fileInput = document.getElementById("id_profile_pic");
-        const uploadBtn = document.getElementById("uploadBtn");
-        const tooltip = document.getElementById("fileNameTooltip");
-        const profileImg = document.querySelector(".profile-picture");
-
-        // open file picker
-        uploadBtn.addEventListener("click", () => {
-            fileInput.click();
-        });
-
-        // file name preview
-        fileInput.addEventListener("change", () => {
-            if (fileInput.files.length > 0) {
-                tooltip.textContent = fileInput.files[0].name;
-            }
-        });
-
-        // AJAX submit
-        form.addEventListener("submit", function (e) {
-            e.preventDefault();
-
-            const formData = new FormData();
-            const file = fileInput.files[0];
-
-            if (!file) return;
-
-            formData.append("profile_pic", file);
-
-            fetch("{% url 'profile' %}", {
-                method: "POST",
-                body: formData,
-                headers: {
-                    "X-CSRFToken": getCookie("csrftoken")
-                }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-
-                    // update image instantly
-                    profileImg.src = data.image_url + "?t=" + new Date().getTime();
-
-                    // reset input
-                    fileInput.value = "";
-                    tooltip.textContent = "";
-
-                    // keep modal open (do nothing)
-                }
-            })
-            .catch(err => {
-                console.error("Upload failed", err);
-            });
-        });
-
-    });
-
-    document.addEventListener("DOMContentLoaded", function () {
-
-        const form = document.getElementById("chatForm");
-        const input = document.getElementById("chatInput");
-        const messagesContainer = document.querySelector(".chat-messages");
-
-        form.addEventListener("submit", function (e) {
-            e.preventDefault();
-
-            const message = input.value.trim();
-            if (!message) return;
-
-            const formData = new FormData();
-            formData.append("message", message);
-
-            fetch("{% url 'send_message' active_channel.id %}", {
-                method: "POST",
-                body: formData,
-                headers: {
-                    "X-CSRFToken": getCookie("csrftoken")
-                }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (!data.success) return;
-
-                const msg = data.message;
-
-                const el = document.createElement("article");
-                el.className = "message";
-
-                el.innerHTML = `
-                    <div class="message-meta">
-                        <span class="message-user">${msg.user}</span>
-                        <span class="message-meta-separator">•</span>
-                        <span class="message-time">${msg.time}</span>
-                    </div>
-                    <p>${msg.content}</p>
-                `;
-
-                messagesContainer.appendChild(el);
-
-                messagesContainer.dataset.lastId = msg.id;
-
-                // auto scroll
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-                // clear input
-                input.value = "";
-            })
-            .catch(err => console.error("Message send failed:", err));
-        });
-
-    });
-
-    const container = document.getElementById("messagesContainer");
-
-    function pollMessages() {
-        let lastId = container.dataset.lastId || 0;
-
-        if (!lastId || lastId === "undefined") {
-            lastId = 0;
-        }
-
-        fetch("{% url 'fetch_messages' active_channel.id %}?last_id=" + lastId)
-            .then(res => res.json())
-            .then(data => {
-
-                if (data.messages.length === 0) return;
-
-                data.messages.forEach(msg => {
-                    const el = document.createElement("article");
-                    el.className = "message";
-
-                    el.innerHTML = `
-                        <div class="message-meta">
-                            <span class="message-user">${msg.user}</span>
-                            <span class="message-meta-separator">•</span>
-                            <span class="message-time">${msg.time}</span>
-                        </div>
-                        <p>${msg.content}</p>
-                    `;
-
-                    container.appendChild(el);
-
-                    // update last message id
-                    container.dataset.lastId = msg.id;
-                });
-
-                // auto scroll
-                container.scrollTop = container.scrollHeight;
-            })
-            .catch(err => console.error("Polling error:", err));
-    }
-
-    // run every 2 seconds
-    setInterval(pollMessages, 2000);
-
-    const emojiBtn = document.querySelector(".emoji-button");
-    const emojiPicker = document.getElementById("emojiPicker");
-    const input = document.getElementById("chatInput");
-
-    // toggle emoji panel
-    emojiBtn.addEventListener("click", () => {
-        emojiPicker.classList.toggle("hidden");
-    });
-
-    // insert emoji
-    emojiPicker.addEventListener("click", (e) => {
-        if (e.target.tagName === "SPAN") {
-            input.value += e.target.textContent;
-            input.focus();
-        }
-    });
-
-    document.addEventListener("click", (e) => {
-        if (!emojiPicker.contains(e.target) && !emojiBtn.contains(e.target)) {
-            emojiPicker.classList.add("hidden");
-        }
-    });
-
-    function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== "") {
-        const cookies = document.cookie.split(";");
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + "=")) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-</script>
-
+<script src="{% static "js/emoji.js" %}"></script>
+<script src="{% static "js/profile.js" %}"></script>
+<script src="{% static "js/chat.js" %}"></script>
 {% endblock %}
