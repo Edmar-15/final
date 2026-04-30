@@ -43,33 +43,42 @@ def profile(request):
     })
 
 @login_required
-def chat_view(request, channel_id):
-    channels = Channel.objects.all()
-    servers = Server.objects.all()
-
+def chat_page(request, channel_id):
     active_channel = Channel.objects.get(id=channel_id)
-
-    if request.method == "POST":
-        content = request.POST.get("message")
-
-        if content and content.strip():  # prevent empty messages
-            Message.objects.create(
-                content=content,
-                created_at=timezone.now(),
-                channel=active_channel,
-                user=request.user
-            )
-
-        return redirect('chat', channel_id=channel_id)
 
     messages = Message.objects.filter(
         channel=active_channel
-    ).order_by('created_at')
+    ).order_by("created_at")
 
-    return render(request, 'home.html', {
-        'server': servers,
-        'channel': channels,
-        'active_channel': active_channel,
-        'messages': messages,
-        'profile' : request.user.userprofile
+    return render(request, "home.html", {
+        "server": Server.objects.all(),
+        "channel": Channel.objects.all(),
+        "active_channel": active_channel,
+        "messages": messages,
+        "profile": request.user.userprofile
+    })
+
+@login_required
+@require_POST
+def send_message(request, channel_id):
+    active_channel = Channel.objects.get(id=channel_id)
+
+    content = request.POST.get("message", "").strip()
+
+    if not content:
+        return JsonResponse({"success": False})
+
+    msg = Message.objects.create(
+        user=request.user,
+        channel=active_channel,
+        content=content
+    )
+
+    return JsonResponse({
+        "success": True,
+        "message": {
+            "user": msg.user.username,
+            "content": msg.content,
+            "time": msg.created_at.strftime("%H:%M")
+        }
     })

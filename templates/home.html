@@ -138,11 +138,11 @@
 
         <footer class="chat-input">
             {% if active_channel %}
-            <form method="POST" action="{% url 'chat' active_channel.id %}" class="chat-form">
+            <form id="chatForm" class="chat-form">
                 {% csrf_token %}
                 <div class="chat-input-row">
                     <div class="chat-input-inner">
-                        <input type="text" name="message" autocomplete="off" placeholder="Message #{{ active_channel.name }}">
+                        <input id="chatInput" type="text" name="message" autocomplete="off" placeholder="Message #{{ active_channel.name }}">
                         <div class="chat-input-actions">
                             <button type="button" class="icon-button emoji-button" title="Insert emoji" aria-label="Insert emoji">
                                 <svg viewBox="0 0 24 24" class="input-icon" aria-hidden="true">
@@ -278,6 +278,59 @@
             .catch(err => {
                 console.error("Upload failed", err);
             });
+        });
+
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const form = document.getElementById("chatForm");
+        const input = document.getElementById("chatInput");
+        const messagesContainer = document.querySelector(".chat-messages");
+
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const message = input.value.trim();
+            if (!message) return;
+
+            const formData = new FormData();
+            formData.append("message", message);
+
+            fetch("{% url 'send_message' active_channel.id %}", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}"
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) return;
+
+                const msg = data.message;
+
+                const el = document.createElement("article");
+                el.className = "message";
+
+                el.innerHTML = `
+                    <div class="message-meta">
+                        <span class="message-user">${msg.user}</span>
+                        <span class="message-meta-separator">•</span>
+                        <span class="message-time">${msg.time}</span>
+                    </div>
+                    <p>${msg.content}</p>
+                `;
+
+                messagesContainer.appendChild(el);
+
+                // auto scroll
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+                // clear input
+                input.value = "";
+            })
+            .catch(err => console.error("Message send failed:", err));
         });
 
     });
