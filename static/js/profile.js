@@ -10,6 +10,35 @@
         document.getElementById("profileModal").style.display = "none";
     }
 
+    function openMemberModal(data) {
+        const modal = document.getElementById("memberProfileModal");
+        document.getElementById("memberProfilePicture").src = data.profilePic || "";
+        document.getElementById("memberProfileName").textContent = data.username;
+        document.getElementById("memberProfileUsername").textContent = data.username;
+        document.getElementById("memberProfileEmail").textContent = data.email || "Not provided";
+        document.getElementById("memberProfileFirstName").textContent = data.firstName || "Not provided";
+        document.getElementById("memberProfileLastName").textContent = data.lastName || "Not provided";
+        document.getElementById("memberProfileStatus").textContent = data.status || "Active";
+        modal.style.display = "block";
+    }
+
+    function closeMemberModal() {
+        document.getElementById("memberProfileModal").style.display = "none";
+    }
+
+    // Close modals when clicking outside
+    window.addEventListener("click", function(event) {
+        const profileModal = document.getElementById("profileModal");
+        const memberProfileModal = document.getElementById("memberProfileModal");
+
+        if (event.target === profileModal) {
+            closeModal();
+        }
+        if (event.target === memberProfileModal) {
+            closeMemberModal();
+        }
+    });
+
     document.addEventListener("DOMContentLoaded", function () {
 
         const form = document.getElementById("profileForm");
@@ -65,6 +94,22 @@
             })
             .catch(err => {
                 console.error("Upload failed", err);
+            });
+        });
+
+        // member profile click handling
+        const memberButtons = document.querySelectorAll('.member-item');
+        memberButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const data = {
+                    username: this.dataset.username,
+                    email: this.dataset.email,
+                    firstName: this.dataset.firstName,
+                    lastName: this.dataset.lastName,
+                    profilePic: this.dataset.profilePic,
+                    status: this.dataset.status,
+                };
+                openMemberModal(data);
             });
         });
 

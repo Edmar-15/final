@@ -63,13 +63,15 @@ def home(request):
     ).order_by('created_at')
 
     profile = request.user.userprofile
+    members = UserProfile.objects.filter(server=active_channel.server).select_related('user') if active_channel else UserProfile.objects.none()
 
     return render(request, 'home.html', {
         'server': servers,
         'channel': channels,
         'active_channel': active_channel,
         'messages': messages,
-        'profile': profile
+        'profile': profile,
+        'members': members,
     })
 
 @login_required

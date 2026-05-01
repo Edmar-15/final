@@ -1,10 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 import os
 from django.http import JsonResponse
 from django.utils.timezone import localtime
 from .models import Server, Channel, Message
+from account.models import User, UserProfile
 
 # Create your views here.
 def welcome(request):
@@ -50,12 +51,23 @@ def chat_page(request, channel_id):
         channel=active_channel
     ).order_by("created_at")
 
+    members = UserProfile.objects.filter(server=active_channel.server).select_related('user')
     return render(request, "home.html", {
         "server": Server.objects.all(),
         "channel": Channel.objects.all(),
         "active_channel": active_channel,
         "messages": messages,
-        "profile": request.user.userprofile
+        "profile": request.user.userprofile,
+        "members": members,
+    })
+
+@login_required
+def user_profile_detail(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    profile, _ = UserProfile.objects.get_or_create(user=user)
+    return render(request, "user_profile.html", {
+        "profile_user": user,
+        "profile": profile,
     })
 
 @login_required
@@ -64,24 +76,33 @@ def send_message(request, channel_id):
     active_channel = Channel.objects.get(id=channel_id)
 
     content = request.POST.get("message", "").strip()
+    image = request.FILES.get("image")
 
-    if not content:
+    if not content and not image:
         return JsonResponse({"success": False})
 
     msg = Message.objects.create(
         user=request.user,
         channel=active_channel,
-        content=content
+        content=content,
+        image=image
     )
 
-    return JsonResponse({
+    response_data = {
         "success": True,
         "message": {
             "user": msg.user.username,
             "content": msg.content,
-            "time": localtime(msg.created_at).strftime("%H:%M")
+            "time": localtime(msg.created_at).strftime("%H:%M"),
+            "timestamp": localtime(msg.created_at).isoformat(),
+            "id": msg.id
         }
-    })
+    }
+
+    if msg.image:
+        response_data["message"]["image_url"] = msg.image.url
+
+    return JsonResponse(response_data)
 
 @login_required
 def fetch_messages(request, channel_id):
@@ -99,11 +120,15 @@ def fetch_messages(request, channel_id):
 
     data = []
     for msg in messages:
-        data.append({
+        msg_data = {
             "id": msg.id,
             "user": msg.user.username,
             "content": msg.content,
-            "time": localtime(msg.created_at).strftime("%H:%M")
-        })
+            "time": localtime(msg.created_at).strftime("%H:%M"),
+            "timestamp": localtime(msg.created_at).isoformat()
+        }
+        if msg.image:
+            msg_data["image_url"] = msg.image.url
+        data.append(msg_data)
 
     return JsonResponse({"messages": data})

@@ -44,7 +44,7 @@ body {
     background: linear-gradient(45deg, #1565c0, #42a5f5);
     color: #ffffff;
     box-shadow: 0 4px 15px rgba(21, 101, 192, 0.3);
-    margin-left: 23px; 
+    width: 100%;
 }
 
 .btn-primary:hover {
@@ -150,6 +150,10 @@ body {
 .profile-pic-form {
     width: 100%;
     max-width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
 }
 
 .form-group {
@@ -196,13 +200,12 @@ body {
 
 .custom-upload-btn {
     display: inline-block;
-    width: auto; 
+    width: 100%; 
     padding: 0.5rem 1.1rem;
     border-radius: 25px; 
     border: none;
     background: linear-gradient(45deg, #1565c0, #42a5f5);
     color: #fff;
-    margin-left: 44px;
     font-size: 0.7rem;
     font-weight: 600;
     cursor: pointer;
@@ -217,7 +220,6 @@ body {
 
 .custom-upload-btn.uploaded {
     background: linear-gradient(45deg, #d32f2f, #ef5350);
-    margin-left: 39px;
 }
 
 .file-tooltip {

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ profile_user.username }} | Profile{% endblock %}
+{% block style %}{% static "css/profile.css" %}{% endblock %}
+
+{% block content %}
+<div class="profile-main">
+    <div class="profile-content">
+        <div class="profile-header">
+            <h1 class="profile-title">{{ profile_user.username }}</h1>
+            <p class="profile-subtitle">User profile details</p>
+        </div>
+
+        <div class="profile-card">
+            <div class="profile-info">
+                <div class="profile-picture-section">
+                    <div class="profile-picture-container">
+                        <img src="{{ profile.profile_pic.url }}" class="profile-picture" alt="{{ profile_user.username }} profile">
+                    </div>
+                </div>
+
+                <div class="profile-details">
+                    <div class="detail-group">
+                        <h3>Email</h3>
+                        <p>{{ profile_user.email }}</p>
+                    </div>
+                    <div class="detail-group">
+                        <h3>First Name</h3>
+                        <p>{{ profile.first_name|default:"Not provided" }}</p>
+                    </div>
+                    <div class="detail-group">
+                        <h3>Last Name</h3>
+                        <p>{{ profile.last_name|default:"Not provided" }}</p>
+                    </div>
+                    <div class="detail-group">
+                        <h3>Server</h3>
+                        <p>{{ profile.server.name }}</p>
+                    </div>
+                    <div class="detail-group">
+                        <h3>Status</h3>
+                        <p>{% if profile_user == request.user %}Online{% else %}Active{% endif %}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-actions">
+            <a href="{% url 'home' %}" class="btn btn-secondary">Back to home</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
