@@ -9,6 +9,22 @@
 {% block content %}
 
 <div class="discord-layout">
+    <div id="channelModal" class="modal-channel hidden-channel">
+        <div class="modal-content">
+            <span class="close" onclick="closeChannelModal()">&times;</span>
+
+            <h3>Create Channel</h3>
+
+            <form id="channelForm" data-url="{% url 'create_channel' %}">
+                {% csrf_token %}
+                <input type="text" name="name" placeholder="Channel name" required>
+                <button type="submit">Create</button>
+            </form>
+
+            <p id="channelError" style="color:red;"></p>
+        </div>
+    </div>
+
     <div id="profileModal" class="modal">
     <div class="modal-content profile-container">
 
@@ -142,7 +158,13 @@
     <main class="chat-area">
         <header class="chat-header">
             <div class="header-title">
-                <h3># {{ active_channel.name }}</h3>
+                <h3>
+                    {% if active_channel %}
+                        # {{ active_channel.name }}
+                    {% else %}
+                        No channel
+                    {% endif %}
+                </h3>
             </div>
             <div class="header-center">
                 <form class="header-search" action="#" method="GET">
@@ -151,7 +173,7 @@
                             <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C8.01 14 6 11.99 6 9.5S8.01 5 10.5 5 15 7.01 15 9.5 12.99 14 10.5 14z" />
                         </svg>
                     </span>
-                    <input type="search" name="q" placeholder="Search #{{ active_channel.name }}" aria-label="Search messages">
+                    <input type="search" name="q" placeholder="{% if active_channel %}Search #{{ active_channel.name }}{% else %}No channel available{% endif %}" aria-label="Search messages">
                 </form>
             </div>
             <div class="header-actions">
@@ -251,7 +273,13 @@
             </div>
         </header>
 
-        <section class="chat-messages" id="messagesContainer" data-current-user="{{ request.user.username }}" data-fetch-url="{% url 'fetch_messages' active_channel.id %}" data-last-id="{% if messages %}{{ messages.last.id }}{% else %}0{% endif %}">
+        <section class="chat-messages" id="messagesContainer" 
+            {% if active_channel %}
+                data-fetch-url="{% url 'fetch_messages' active_channel.id %}"
+            {% else %}
+                data-fetch-url=""
+            {% endif %} 
+                data-last-id="{% if messages %}{{ messages.last.id }}{% else %}0{% endif %}">
             {% for msg in messages %}
                 <article class="message{% if msg.user == request.user %} message-outgoing{% endif %}" data-timestamp="{{ msg.created_at|date:'c' }}">
                     <div class="message-meta">
@@ -273,12 +301,16 @@
 
         <footer class="chat-input">
             {% if active_channel %}
-            <form id="chatForm" class="chat-form" data-send-url="{% url 'send_message' active_channel.id %}">
+            <form id="chatForm"
+                class="chat-form"
+                data-send-url="{% url 'send_message' active_channel.id %}">
+            {% else %}
+            <form id="chatForm" class="chat-form">
+            {% endif %}
                 {% csrf_token %}
                 <div class="chat-input-row">
                     <div class="chat-input-inner">
-                        <input id="chatInput" type="text" name="message" autocomplete="off" placeholder="Message #{{ active_channel.name }}">
-                        <input type="file" id="imageInput" name="image" accept="image/*" hidden>
+                        <input id="chatInput" type="text" name="message" autocomplete="off" placeholder="{% if active_channel %}Message #{{ active_channel.name }}{% else %}No channel available{% endif %}">
                         <div class="chat-input-actions">
                             <button type="button" class="icon-button emoji-button" title="Insert emoji" aria-label="Insert emoji">
                                 <div id="emojiPicker" class="emoji-picker hidden">
@@ -337,19 +369,20 @@
                     </div>
                 </div>
             </form>
-            {% endif %}
         </footer>
     </main>
 
     <aside class="sidebar-channels">
         <div class="sidebar-top">
             <h3>Channels</h3>
-            <button class="icon-button" title="New channel">+</button>
+            {% if request.user.is_moderator == 1 %}
+                <button class="icon-button" onclick="openChannelModal()" title="New channel">+</button>
+            {% endif %}
         </div>
 
         <div class="channels-list">
             {% for channels in channel %}
-                <a href="{% url 'chat' channels.id %}" class="channel-item {% if channels.id == active_channel.id %}active{% endif %}">
+                <a href="{% url 'chat' channels.id %}" class="channel-item {% if active_channel and channels.id == active_channel.id %}active{% endif %}">
                     <span class="channel-hash">#</span>{{ channels.name }}
                 </a>
             {% endfor %}
@@ -387,4 +420,5 @@
 <script src="{% static "js/emoji.js" %}"></script>
 <script src="{% static "js/profile.js" %}"></script>
 <script src="{% static "js/chat.js" %}"></script>
+<script src="{% static "js/channel.js" %}"></script>
 {% endblock %}

@@ -54,19 +54,21 @@ def logout_view(request):
 @decorators.verification_required
 @decorators.completion_required
 def home(request):
-    servers = Server.objects.all()
-    channels = Channel.objects.all()
+
+    profile = request.user.userprofile
+    server = profile.server
+
+    channels = Channel.objects.filter(server=server).order_by('id')
     active_channel = channels.first()
 
     messages = Message.objects.filter(
         channel=active_channel
-    ).order_by('created_at')
+    ).order_by('created_at') if active_channel else []
 
-    profile = request.user.userprofile
     members = UserProfile.objects.filter(server=active_channel.server).select_related('user') if active_channel else UserProfile.objects.none()
 
     return render(request, 'home.html', {
-        'server': servers,
+        'server': [server],  # keep template loop working
         'channel': channels,
         'active_channel': active_channel,
         'messages': messages,
