@@ -1,6 +1,7 @@
 from django import forms
 from .models import User, UserProfile
 import re
+from landing.models import Server
 
 ALLOWED_DOMAINS = [
      "lspu.edu.ph"   
@@ -58,10 +59,17 @@ class RegisterForm(forms.ModelForm):
         return user
     
 class AccountCompletion(forms.ModelForm):
+    server = forms.ModelChoiceField(
+        queryset=Server.objects.all(),
+        widget=forms.Select(),
+        empty_label="Select Server"
+    )
+    
     class Meta:
         model = UserProfile
         fields = [
             'first_name',
             'last_name',
             'profile_pic',
+            'server'
         ]

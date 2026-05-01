@@ -1,58 +1,108 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-        const form = document.getElementById("chatForm");
-        const input = document.getElementById("chatInput");
-        const messagesContainer = document.querySelector(".chat-messages");
-        const send_url = form.dataset.sendUrl;
+    const form = document.getElementById("chatForm");
+    const input = document.getElementById("chatInput");
+    const imageInput = document.getElementById("imageInput");
+    const imageButton = document.querySelector(".image-button");
+    const messagesContainer = document.querySelector(".chat-messages");
+    const send_url = form.dataset.sendUrl;
+    
+    setTimeout(() => {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }, 100);
 
-        form.addEventListener("submit", function (e) {
-            e.preventDefault();
+    // =========================
+    // IMAGE BUTTON (image only)
+    // =========================
+    if (imageButton && imageInput) {
+        imageButton.addEventListener("click", () => imageInput.click());
 
-            const message = input.value.trim();
-            if (!message) return;
+        imageInput.addEventListener("change", function () {
+            const file = this.files[0];
+            if (!file) return;
+
+            // limit: 5MB
+            if (file.size > 5 * 1024 * 1024) {
+                alert("Image must be less than 5MB");
+                this.value = "";
+                return;
+            }
 
             const formData = new FormData();
-            formData.append("message", message);
+            formData.append("image", file); // ONLY image
 
-            fetch(send_url, {
-                method: "POST",
-                body: formData,
-                headers: {
-                    "X-CSRFToken": getCookie("csrftoken")
-                }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (!data.success) return;
+            sendMessage(formData);
 
-                const msg = data.message;
-
-                const el = document.createElement("article");
-                el.className = "message";
-
-                el.innerHTML = `
-                    <div class="message-meta">
-                        <span class="message-user">${msg.user}</span>
-                        <span class="message-meta-separator">•</span>
-                        <span class="message-time">${msg.time}</span>
-                    </div>
-                    <p>${msg.content}</p>
-                `;
-
-                messagesContainer.appendChild(el);
-
-                messagesContainer.dataset.lastId = msg.id;
-
-                // auto scroll
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-                // clear input
-                input.value = "";
-            })
-            .catch(err => console.error("Message send failed:", err));
+            this.value = ""; // reset after send
         });
+    }
 
+    // =========================
+    // TEXT SEND (text only)
+    // =========================
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const message = input.value.trim();
+        if (!message) return;
+
+        const formData = new FormData();
+        formData.append("message", message); // ONLY text
+
+        sendMessage(formData);
     });
+
+    // =========================
+    // SINGLE FETCH FUNCTION
+    // =========================
+    function sendMessage(formData) {
+        fetch(send_url, {
+            method: "POST",
+            body: formData,
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken")
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) return;
+
+            renderMessage(data.message);
+        })
+        .catch(err => console.error("Send failed:", err));
+    }
+
+    // =========================
+    // RENDER MESSAGE
+    // =========================
+    function renderMessage(msg) {
+        const el = document.createElement("article");
+        el.className = "message";
+
+        el.innerHTML = `
+            <div class="message-meta">
+                <span class="message-user">${msg.user}</span>
+                <span class="message-meta-separator">•</span>
+                <span class="message-time">${msg.time}</span>
+            </div>
+            ${msg.content ? `<p>${msg.content}</p>` : ""}
+        `;
+
+        if (msg.image_url) {
+            el.innerHTML += `
+                <img src="${msg.image_url}" 
+                     style="max-width:100%; margin-top:8px; border-radius:8px; width:600px;">
+            `;
+        }
+
+        messagesContainer.appendChild(el);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+        // clear text input only
+        input.value = "";
+    }
+
+});
 
     const container = document.getElementById("messagesContainer");
     const url = container.dataset.fetchUrl;
@@ -80,12 +130,19 @@ document.addEventListener("DOMContentLoaded", function () {
                             <span class="message-meta-separator">•</span>
                             <span class="message-time">${msg.time}</span>
                         </div>
-                        <p>${msg.content}</p>
+                        ${msg.content ? `<p>${msg.content}</p>` : ""}
                     `;
+
+                    // ✅ ADD THIS (image support)
+                    if (msg.image_url) {
+                        el.innerHTML += `
+                            <img src="${msg.image_url}" 
+                                style="max-width:100%; margin-top:8px; border-radius:8px; width:600px;">
+                        `;
+                    }
 
                     container.appendChild(el);
 
-                    // update last message id
                     container.dataset.lastId = msg.id;
                 });
 

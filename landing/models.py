@@ -24,6 +24,7 @@ class Message(models.Model):
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name="messages")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     content = models.TextField()
+    image = models.ImageField(upload_to='chat_images/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

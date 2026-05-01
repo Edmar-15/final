@@ -134,11 +134,99 @@
                 </form>
             </div>
             <div class="header-actions">
-                <button class="icon-button" title="Channel members" aria-label="Channel members">
-                    <svg viewBox="0 0 24 24" class="icon-svg" aria-hidden="true">
-                        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5C15 14.17 10.33 13 8 13zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
-                    </svg>
-                </button>
+                <div class="notification-dropdown">
+                    <button class="icon-button notification-btn" title="Notifications" aria-label="Notifications">
+                        <svg viewBox="0 0 24 24" class="icon-svg" aria-hidden="true">
+                            <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+                        </svg>
+                    </button>
+                    <div class="notification-panel">
+                        <div class="notification-header">
+                            <h3>Notifications</h3>
+                        </div>
+                        <div class="notification-list">
+                            <div class="notification-item">
+                                <div class="notification-icon">
+                                    <svg viewBox="0 0 24 24" class="icon-svg">
+                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                    </svg>
+                                </div>
+                                <div class="notification-details">
+                                    <h4>Welcome to the community!</h4>
+                                    <p>You've successfully joined our platform.</p>
+                                    <span class="notification-time">Just now</span>
+                                </div>
+                            </div>
+                            <div class="notification-item unread">
+                                <div class="notification-icon">
+                                    <svg viewBox="0 0 24 24" class="icon-svg">
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                    </svg>
+                                </div>
+                                <div class="notification-details">
+                                    <h4>New feature available!</h4>
+                                    <p>Check out the new emoji picker.</p>
+                                    <span class="notification-time">2 hours ago</span>
+                                </div>
+                            </div>
+                            <div class="notification-item">
+                                <div class="notification-icon">
+                                    <svg viewBox="0 0 24 24" class="icon-svg">
+                                        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5C15 14.17 10.33 13 8 13zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                                    </svg>
+                                </div>
+                                <div class="notification-details">
+                                    <h4>New member joined</h4>
+                                    <p>A new user has joined your server.</p>
+                                    <span class="notification-time">1 day ago</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="notification-footer">
+                            <button class="view-all-btn">View All Notifications</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="member-dropdown">
+                    <button class="icon-button member-btn" title="Server members" aria-label="Server members">
+                        <svg viewBox="0 0 24 24" class="icon-svg" aria-hidden="true">
+                            <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5C15 14.17 10.33 13 8 13zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+                        </svg>
+                    </button>
+                    <div class="member-panel">
+                        <div class="member-header">
+                            <h3>Server Members</h3>
+                        </div>
+                        <div class="member-list">
+                            {% for member in members %}
+                                <button type="button"
+                                        class="member-item {% if member.user == request.user %}unread{% endif %}"
+                                        data-username="{{ member.user.username }}"
+                                        data-email="{{ member.user.email }}"
+                                        data-first-name="{{ member.first_name|default_if_none:'' }}"
+                                        data-last-name="{{ member.last_name|default_if_none:'' }}"
+                                        data-profile-pic="{{ member.profile_pic.url }}"
+                                        data-status="{% if member.user == request.user %}Online{% else %}Active{% endif %}">
+                                    <span class="member-avatar">
+                                        <img src="{{ member.profile_pic.url }}" alt="{{ member.user.username }} profile">
+                                    </span>
+                                    <div class="member-info">
+                                        <strong>{{ member.user.username }}</strong>
+                                        <span>{% if member.user == request.user %}Online{% else %}Active{% endif %}</span>
+                                    </div>
+                                </button>
+                            {% empty %}
+                                <div class="member-item">
+                                    <span class="member-avatar">?</span>
+                                    <div class="member-info">
+                                        <strong>No members</strong>
+                                        <span>Try again later</span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -156,7 +244,13 @@
                         <span class="message-meta-separator">•</span>
                         <span class="message-time">{{ msg.created_at|date:"H:i" }}</span>
                     </div>
-                    <p>{{ msg.content }}</p>
+                    {% if msg.content %}
+                        <p>{{ msg.content }}</p>
+                    {% endif %}
+
+                    {% if msg.image %}
+                        <img src="{{ msg.image.url }}" style="max-width:100%; margin-top:8px; border-radius:8px; width: 600px;">
+                    {% endif %}
                 </article>
             {% empty %}
                 <article class="message empty">
@@ -169,7 +263,8 @@
             {% if active_channel %}
             <form id="chatForm"
                 class="chat-form"
-                data-send-url="{% url 'send_message' active_channel.id %}">
+                data-send-url="{% url 'send_message' active_channel.id %}"
+                enctype="multipart/form-data">
             {% else %}
             <form id="chatForm" class="chat-form">
             {% endif %}
@@ -177,6 +272,7 @@
                 <div class="chat-input-row">
                     <div class="chat-input-inner">
                         <input id="chatInput" type="text" name="message" autocomplete="off" placeholder="{% if active_channel %}Message #{{ active_channel.name }}{% else %}No channel available{% endif %}">
+                        <input type="file" id="imageInput" name="image" accept="image/*" hidden>
                         <div class="chat-input-actions">
                             <button type="button" class="icon-button emoji-button" title="Insert emoji" aria-label="Insert emoji">
                                 <div id="emojiPicker" class="emoji-picker hidden">

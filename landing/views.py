@@ -5,6 +5,7 @@ import os
 from django.http import JsonResponse
 from django.utils.timezone import localtime
 from .models import Server, Channel, Message
+from account.models import UserProfile
 
 # Create your views here.
 def welcome(request):
@@ -61,13 +62,16 @@ def chat_page(request, channel_id):
     messages = Message.objects.filter(
         channel=active_channel
     ).order_by("created_at")
+    
+    members = UserProfile.objects.filter(server=active_channel.server).select_related('user') if active_channel else UserProfile.objects.none()
 
     return render(request, "home.html", {
         "server": [server],
         "channel": channels,
         "active_channel": active_channel,
         "messages": messages,
-        "profile": profile
+        "profile": profile,
+        "members" : members
     })
 
 @login_required
@@ -85,15 +89,21 @@ def send_message(request, channel_id):
         return JsonResponse({"success": False, "error": "Unauthorized"}, status=403)
 
     content = request.POST.get("message", "").strip()
+    image = request.FILES.get("image")
 
-    if not content:
+    # allow text OR image
+    if not content and not image:
         return JsonResponse({"success": False})
 
     msg = Message.objects.create(
         user=request.user,
         channel=active_channel,
-        content=content
+        content=content or ""
     )
+
+    if image:
+        msg.image = image
+        msg.save()
 
     return JsonResponse({
         "success": True,
@@ -101,7 +111,8 @@ def send_message(request, channel_id):
             "id": msg.id,
             "user": msg.user.username,
             "content": msg.content,
-            "time": localtime(msg.created_at).strftime("%H:%M")
+            "time": localtime(msg.created_at).strftime("%H:%M"),
+            "image_url": msg.image.url if msg.image else None
         }
     })
 
@@ -136,7 +147,8 @@ def fetch_messages(request, channel_id):
             "id": msg.id,
             "user": msg.user.username,
             "content": msg.content,
-            "time": localtime(msg.created_at).strftime("%H:%M")
+            "time": localtime(msg.created_at).strftime("%H:%M"),
+            "image_url": msg.image.url if msg.image else None
         })
 
     return JsonResponse({"messages": data})

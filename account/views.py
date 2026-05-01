@@ -64,13 +64,16 @@ def home(request):
     messages = Message.objects.filter(
         channel=active_channel
     ).order_by('created_at') if active_channel else []
+    
+    members = UserProfile.objects.filter(server=active_channel.server).select_related('user') if active_channel else UserProfile.objects.none()
 
     return render(request, 'home.html', {
         'server': [server],  # keep template loop working
         'channel': channels,
         'active_channel': active_channel,
         'messages': messages,
-        'profile': profile
+        'profile': profile,
+        'members': members
     })
 
 @login_required
