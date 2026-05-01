@@ -9,6 +9,8 @@ from account.models import User, UserProfile
 
 # Create your views here.
 def welcome(request):
+    if request.user.is_authenticated:
+        return redirect('home')
     return render(request,'welcome.html')
 
 def about(request):

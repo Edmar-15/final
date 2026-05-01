@@ -64,4 +64,5 @@ class AccountCompletion(forms.ModelForm):
             'first_name',
             'last_name',
             'profile_pic',
+            'server',
         ]

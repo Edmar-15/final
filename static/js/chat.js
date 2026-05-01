@@ -90,6 +90,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     timeEl.textContent = formatPhilippinesTime(timestamp);
                 }
             });
+
+            // Scroll to bottom on page load
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
         form.addEventListener("submit", function (e) {

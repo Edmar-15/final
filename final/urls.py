@@ -17,14 +17,23 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from landing.views import welcome
+from account.views import home
+from django.conf import settings
+from django.conf.urls.static import static
+
+from django.contrib import admin
+from django.urls import path, include
+from landing.views import welcome
+from account.views import home
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', welcome, name='welcome'),
+    path('home/', home, name='home'),
+    path('', include('landing.urls')),
     path('accounts/', include('account.urls')),
-    path('piyu/', include('landing.urls')),
 ]
 
 if settings.DEBUG:

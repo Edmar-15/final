@@ -56,6 +56,11 @@ def logout_view(request):
 def home(request):
 
     profile = request.user.userprofile
+    if not profile.server:
+        from landing.models import Server
+        profile.server = Server.objects.first()
+        profile.save()
+
     server = profile.server
 
     channels = Channel.objects.filter(server=server).order_by('id')

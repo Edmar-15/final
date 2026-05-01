@@ -5,11 +5,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('home', home, name='home'),
     path('about/', views.about, name='about'),
     path('contact/', views.contact, name='contact'),
     path('profile/', views.profile, name='profile'),
-    path('profile/<int:user_id>/', views.user_profile_detail, name='user_profile'),
     path("channel/<int:channel_id>/", views.chat_page, name="chat"),
     path("chat/<int:channel_id>/send/", views.send_message, name="send_message"),
     path("fetch-messages/<int:channel_id>/", views.fetch_messages, name="fetch_messages"),
