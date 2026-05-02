@@ -110,6 +110,7 @@ def send_message(request, channel_id):
         "message": {
             "id": msg.id,
             "user": msg.user.username,
+            "user_id": msg.user.id,
             "content": msg.content,
             "time": localtime(msg.created_at).strftime("%H:%M"),
             "image_url": msg.image.url if msg.image else None
@@ -146,6 +147,7 @@ def fetch_messages(request, channel_id):
         data.append({
             "id": msg.id,
             "user": msg.user.username,
+            "user_id": msg.user.id,
             "content": msg.content,
             "time": localtime(msg.created_at).strftime("%H:%M"),
             "image_url": msg.image.url if msg.image else None

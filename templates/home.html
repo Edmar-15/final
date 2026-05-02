@@ -236,20 +236,24 @@
             {% else %}
                 data-fetch-url=""
             {% endif %} 
-                data-last-id="{% if messages %}{{ messages.last.id }}{% else %}0{% endif %}">
+            data-last-id="{% if messages %}{{ messages.last.id }}{% else %}0{% endif %}">
+
             {% for msg in messages %}
-                <article class="message">
+                <article class="message {% if msg.user == request.user %}own{% else %}other{% endif %}">
+                    
                     <div class="message-meta">
                         <span class="message-user">{{ msg.user.username }}</span>
                         <span class="message-meta-separator">•</span>
                         <span class="message-time">{{ msg.created_at|date:"H:i" }}</span>
                     </div>
+
                     {% if msg.content %}
                         <p>{{ msg.content }}</p>
                     {% endif %}
 
                     {% if msg.image %}
-                        <img src="{{ msg.image.url }}" style="max-width:100%; margin-top:8px; border-radius:8px; width: 600px;">
+                        <img src="{{ msg.image.url }}" 
+                            style="max-width:100%; margin-top:8px; border-radius:8px; width:600px;">
                     {% endif %}
                 </article>
             {% empty %}

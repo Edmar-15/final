@@ -219,17 +219,32 @@ button {
     background: rgba(21, 101, 192, 0.6);
 }
 
+/* BASE */
 .message {
     width: fit-content;
     max-width: 85%;
     padding: 18px 20px;
     border-radius: 18px;
+    margin: 6px 10px;
     background: #ffffff;
     border: 1px solid rgba(21, 101, 192, 0.12);
     color: #10243b;
     box-shadow: 0 10px 24px rgba(21, 101, 192, 0.06);
 }
 
+/* RIGHT (YOU) */
+.message.own {
+    align-self: flex-end;
+    background: rgba(66, 165, 245, 0.16);
+    border-color: rgba(21, 101, 192, 0.22);
+}
+
+/* LEFT (OTHERS) */
+.message.other {
+    align-self: flex-start;
+}
+
+/* META */
 .message-meta {
     display: flex;
     align-items: center;
@@ -240,20 +255,28 @@ button {
 
 .message-meta-separator {
     margin: 0 8px;
-    color: #4a7caa;
 }
 
 .message-user {
-    font-weight: 700;
     color: #1565c0;
+    font-weight: 700;
 }
 
 .message-time {
+    color: #1565c0;
     opacity: 0.8;
 }
 
-.message.empty {
-    background: rgba(255, 255, 255, 0.92);
+/* FIX TEXT COLOR ON OWN */
+.message.own .message-user,
+.message.own .message-meta,
+.message.own .message-meta-separator {
+    color: rgba(255,255,255,0.85);
+}
+
+/* OPTIONAL */
+.message.own .message-user {
+    display: none;
 }
 
 .chat-input {

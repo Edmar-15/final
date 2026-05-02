@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="{% block style %}{% endblock %}">
     {% block head %}{% endblock %}
 </head>
-<body>
+<body data-user-id="{{ request.user.id }}">
     {% block content %}
     {% endblock %}
 </body>
